@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Luckiest+Guy&display=swap" rel="stylesheet">   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <title>Document</title>
+</head>
+<body>
+    <canvas></canvas>
+    <div id="main">
+        <p id="header">Options:</p>
+        <div class="options">
+            <p>Dimensions</p>
+            <input type="text" placeholder="# of Gradient Vectors">
+            <input type="text" placeholder="# of Squares per Gradient Vector">
+        </div>
+        <div class="options">
+            <p>Color Options(HSL)</p>
+            <input type="text" placeholder="Color(0 - 320)">
+            <input type="text" placeholder="Saturation(0-100)">
+            <input type="text" placeholder="Brightness(0-100)">
+            <span style="font-weight: 100; margin-top:70px;">Type in <strong><u>"var"</u></strong> for one these to indicate that, that is the variable you'd like to see change</span>
+        </div>
+        <button onclick="start()">Initiate</button>
+    </div>
+
+    <div id="opacity">
+        <div class="loader"></div>
+        <span style="color: white; margin-top: 20px; font-weight:bold;">Please Wait a momment</span>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        const opacity = document.getElementById('opacity');
+        opacity.style.display = 'none';
+
+
+        function start(){
+            opacity.style.display = 'flex';
+
+            setTimeout(()=>{
+                // const gradients = 2; //gradient per row
+                // const squares = 2; //squares per gradient
+                let colorOption;
+                let colorFormat; 
+
+                const gradients = parseInt(document.querySelectorAll('input')[0].value);
+                const squares = parseInt(document.querySelectorAll('input')[1].value);
+
+                
+                const color = document.querySelectorAll('input')[2].value;
+                const sat = document.querySelectorAll('input')[3].value;
+                const bright = document.querySelectorAll('input')[4].value;
+
+                if (color == 'var'){
+                    colorOption = 320;
+                    colorFormat = (val) =>{
+                        return 'hsl('+val+',' + sat + '%,' + bright + '%)'
+                    }
+                }
+                else if(sat == 'var'){
+                    colorOption = 100;
+                    colorFormat = (val) =>{
+                        return 'hsl('+color + ','+val+'%,' + bright + '%)'
+                    }
+                }
+                else if(bright == 'var'){
+                    colorOption = 100;
+                    colorFormat = (val) =>{
+                        return 'hsl('+color+","+  sat + '%,' + ''+val+'%)'
+                    }
+                }
+
+                const squareSize = canvas.width / gradients / squares; //size of each square or pixel
+                const squaresPer = 1 / squares; //# of squares per gradient vector
+
+                c.clearRect(0,0, canvas.height, canvas.height);
+                let perlin = new perlin1;
+                for(let y = 0; y < gradients; y+= squaresPer){ //vertical # of gradients
+                    for(let x = 0; x < gradients; x += squaresPer){ //horizontal # of gradients
+                        const colorVal = perlin.get(x,y) * colorOption;
+
+                        c.fillStyle = colorFormat(colorVal);
+                        
+                        c.fillRect(
+                            x * squareSize * squares,
+                            y * squareSize * squares,
+                            squareSize,
+                            squareSize
+                        );
+                        c.stroke();
+                    }
+                }
+                opacity.style.display = 'none';
+            }, 500)
+
+
+            
+
+        }
+    </script>
+</body>
+</html>
